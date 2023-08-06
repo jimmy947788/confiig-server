@@ -12,5 +12,7 @@
   "pylint.importStrategy": "fromEnvironment",
   "[gitignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
-  }
+  },
+  "tasks.statusbar.limit": 0,
+  "tasks.statusbar.select.label": "run tasks ..."
 }
