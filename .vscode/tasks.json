@@ -10,7 +10,7 @@
                     "build": true
                     //"services": ["myservice"]
                 },
-                "envFile": "${workspaceFolder}/.env",
+                "envFile": "${workspaceFolder}/config/DEV.env",
                 "files": [
                     "${workspaceFolder}/docker-compose.yml",
                     "${workspaceFolder}/docker-compose.debug.yml"

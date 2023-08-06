@@ -24,4 +24,4 @@ services:
     volumes:
       - ./mysql/database:/docker-entrypoint-initdb.d
       - ./mysql/conf:/etc/mysql/conf.d
-    env_file: ./.env
+    env_file: ./config/DEV.env
