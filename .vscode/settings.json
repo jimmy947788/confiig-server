@@ -10,7 +10,7 @@
   },
   "python.analysis.typeCheckingMode": "basic",
   "pylint.importStrategy": "fromEnvironment",
-  "[ignore]": {
+  "[gitignore]": {
     "editor.defaultFormatter": "foxundermoon.shell-format"
   }
 }
