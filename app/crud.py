@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 import models, schemas
-
+from loguru import logger
 
 def get_configs(db: Session, app_name: str, app_env: str):
     return db.query(models.Config) \

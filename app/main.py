@@ -6,8 +6,8 @@ from sqlalchemy.orm import Session
 import crud, models, schemas
 from database import SessionLocal, engine
 
-from propan import RabbitBroker
-from propan.fastapi import RabbitRouter
+# from propan import RabbitBroker
+# from propan.fastapi import RabbitRouter
 
 from typing_extensions import Annotated
 
@@ -21,12 +21,12 @@ logger.add(f"./logs/{configs.APP_NAME}.log", rotation="12:00", encoding="utf-8",
 
 models.Base.metadata.create_all(bind=engine)
 
-router = RabbitRouter("amqp://guest:guest@rabbitmq.local:5672", setup_state=False)
+# # create RabbitRouter
+# router = RabbitRouter("amqp://guest:guest@rabbitmq.local:5672", setup_state=False)
+# def broker():
+#     return router.broker
 
-def broker():
-    return router.broker
-
-app = FastAPI(lifespan=router.lifespan_context)
+app = FastAPI() #lifespan=router.lifespan_context
 
 # Dependency
 def get_db():
@@ -45,9 +45,31 @@ async def create_config(config: schemas.ConfigCreate, db: Session = Depends(get_
                                             srv_name=config.srv_name, 
                                             conf_key=config.conf_key)
         if db_config:
-            raise HTTPException(status_code=400, detail="Config already exists")
-        
+            raise HTTPException(status_code=400, detail="Config already exists")       
         return crud.create_config(db=db, config=config)
+    except Exception as ex:
+        logger.error(ex)
+        raise ex
+
+
+@app.put("/configs/", response_model=schemas.Config)
+async def update_config(config: schemas.ConfigCreate, db: Session = Depends(get_db)):
+    try:
+        db_config = crud.get_config_by_key(db=db, 
+                                app_name=config.app_name, 
+                                app_env=config.app_env, 
+                                srv_name=config.srv_name, 
+                                conf_key=config.conf_key)
+        if not db_config:
+            raise HTTPException(status_code=404, detail="Hero not found")
+        
+        db_config.conf_value = config.conf_value
+        db_config.description = config.description
+        db_config.updated_at = datetime.now()
+        db.add(db_config)
+        db.commit()
+        db.refresh(db_config)
+        return db_config
     except Exception as ex:
         logger.error(ex)
         raise ex
@@ -62,8 +84,8 @@ async def get_configs_by_appenv(app_name: str, app_env: str, db: Session = Depen
         json_compatible_item_data = jsonable_encoder(db_configs)
         return JSONResponse(content=json_compatible_item_data)
     except Exception as ex:
-            logger.error(ex)
-            raise ex
+        logger.error(ex)
+        raise ex
 
 @app.get("/dotenv/{app_name}/{app_env}", response_class=PlainTextResponse)
 async def get_configs_by_appenv_to_env_file(app_name: str, app_env: str, db: Session = Depends(get_db)):
@@ -80,13 +102,15 @@ async def get_configs_by_appenv_to_env_file(app_name: str, app_env: str, db: Ses
         raise ex
     
 
-@router.get("/publish/{message}", response_class=PlainTextResponse)
-async def hello_http(message: str):
-    # get current time string formatted yyyy/mm/dd hh:mm:ss
-    now = datetime.now()
-    current_time = now.strftime("%Y/%m/%d %H:%M:%S")
+# define a route handler for the default home page
+# @router.get("/publish/{message}", response_class=PlainTextResponse)
+# async def hello_http(message: str):
+#     # get current time string formatted yyyy/mm/dd hh:mm:ss
+#     now = datetime.now()
+#     current_time = now.strftime("%Y/%m/%d %H:%M:%S")
     
-    await router.broker.publish(f"[{current_time}] Hello, {message}", "test_queue")
-    return "Hello, HTTP!"
+#     await router.broker.publish(f"[{current_time}] Hello, {message}", "test_queue")
+#     return "Hello, HTTP!"
 
-app.include_router(router)
+## add RabbitRouter to FastAPI
+#app.include_router(router)
