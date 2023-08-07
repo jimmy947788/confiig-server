@@ -1,7 +1,7 @@
 {
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "[python]": {
-    "editor.defaultFormatter": "ms-python.python",
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": false
   },
   "[dotenv]": {
@@ -14,5 +14,9 @@
     "editor.defaultFormatter": "foxundermoon.shell-format"
   },
   "tasks.statusbar.limit": 0,
-  "tasks.statusbar.select.label": "run tasks ..."
+  "tasks.statusbar.select.label": "run tasks ...",
+  "python.formatting.provider": "none",
+  "[ignore]": {
+    "editor.defaultFormatter": "foxundermoon.shell-format"
+  }
 }

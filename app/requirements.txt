@@ -8,3 +8,4 @@ loguru==0.7.0
 databases==0.4.2
 PyMySQL==1.1.0
 #mysqlclient==2.2.0
+propan[async-rabbit]==0.1.5.17

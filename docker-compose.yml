@@ -25,3 +25,20 @@ services:
       - ./mysql/database:/docker-entrypoint-initdb.d
       - ./mysql/conf:/etc/mysql/conf.d
     env_file: ./config/DEV.env
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq.local
+    hostname: rabbitmq.local
+    restart: always
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
+    #command: >
+    #  bash -c "/scripts/init.sh && echo 'hello'"
+    #volumes:
+    #- ./rabbitmq/init.sh:/scripts/init.sh
+    #- ./rabbitmq/init_check.sh:/scripts/init_check.sh
+    #- rabbitmq-data:/var/lib/rabbitmq # data mapping -> host: container

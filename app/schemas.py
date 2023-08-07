@@ -1,35 +1,17 @@
 from pydantic import BaseModel
+from datetime import datetime
 
 
-class ItemBase(BaseModel):
-    title: str
+class ConfigCreate(BaseModel):
+    app_name: str
+    app_env: str
+    srv_name: str
+    conf_key: str
+    conf_value: str | None = None
     description: str | None = None
 
-
-class ItemCreate(ItemBase):
-    pass
-
-
-class Item(ItemBase):
-    id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-
-class UserBase(BaseModel):
-    email: str
-
-
-class UserCreate(UserBase):
-    password: str
-
-
-class User(UserBase):
-    id: int
+class Config(ConfigCreate):
+    uuid: str
     is_active: bool
-    items: list[Item] = []
-
-    class Config:
-        orm_mode = True
+    created_at: datetime
+    updated_at: datetime
