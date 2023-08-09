@@ -1,5 +1,9 @@
 version: "3.5"
 
+volumes:
+  rabbitmq-data:
+    
+    
 services:
   config-server:
     image: config-server
