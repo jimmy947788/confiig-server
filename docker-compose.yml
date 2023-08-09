@@ -24,6 +24,7 @@ services:
     volumes:
       - ./mysql/database:/docker-entrypoint-initdb.d
       - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/data:/var/lib/mysql
     env_file: ./config/DEV.env
 
   rabbitmq:
@@ -38,7 +39,8 @@ services:
       - RABBITMQ_PID_FILE=/var/lib/rabbitmq/mnesia/rabbitmq
     #command: >
     #  bash -c "/scripts/init.sh && echo 'hello'"
-    #volumes:
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq # data mapping -> host: container
     #- ./rabbitmq/init.sh:/scripts/init.sh
     #- ./rabbitmq/init_check.sh:/scripts/init_check.sh
-    #- rabbitmq-data:/var/lib/rabbitmq # data mapping -> host: container
+    
