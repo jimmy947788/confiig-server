@@ -10,7 +10,7 @@ services:
     container_name: config-server.local
     hostname: config-server.local
     ports:
-      - 8000:8000
+      - 8010:8000
     environment:
       DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}"
     depends_on:
