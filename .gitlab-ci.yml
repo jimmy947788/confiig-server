@@ -7,6 +7,7 @@ variables:
   APP_NAME: mkeyadmin
   APP_ENV: $CI_COMMIT_REF_NAME
   ENV_FILE: config/default.env
+  CI_DEBUG_TRACE: "true"
 
 stages:
   - build
