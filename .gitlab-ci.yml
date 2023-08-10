@@ -1,0 +1,50 @@
+image: docker
+
+services:
+  - docker:dind
+
+variables:
+  APP_NAME: mkeyadmin
+  APP_ENV: $CI_COMMIT_REF_NAME
+  ENV_FILE: config/default.env
+
+stages:
+  - build
+  - deploy
+  - test
+
+before_script:
+  - echo "CI_COMMIT_REF_NAME=$CI_COMMIT_REF_NAME" # DEV/QAT/PRD
+  - echo "CI_COMMIT_REF_SLUG=$CI_COMMIT_REF_SLUG" # dev/qat/prd
+  - echo "CI_COMMIT_BRANCH=$CI_COMMIT_BRANCH"
+  - echo "CI_COMMIT_TAG=$CI_COMMIT_TAG"
+  - echo "CI_COMMIT_SHA=$CI_COMMIT_SHA" # Commit Hash Code
+  - echo "CI_COMMIT_SHORT_SHA=$CI_COMMIT_SHORT_SHA" # Commit Hash Code 的前 8 字元
+  - source $ENV_FILE
+
+build:
+  stage: build
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+  tags:
+    - devops
+  script:
+    - docker compose --env-file $ENV_FILE build --no-cache
+test:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+  tags:
+    - devops
+  stage: test
+  script:
+    - echo "目前想不道要測什麼"
+
+deploy:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'web'
+  tags:
+    - $CI_COMMIT_REF_NAME
+  stage: deploy
+  script:
+    - docker compose --env-file $ENV_FILE down
+    - docker compose --env-file $ENV_FILE up -d
