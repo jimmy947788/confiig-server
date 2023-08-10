@@ -3,6 +3,7 @@ from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse, PlainTextResponse
 from sqlalchemy.orm import Session
 
+from typing import Optional
 import crud, models, schemas
 from database import SessionLocal, engine
 
@@ -37,7 +38,7 @@ def get_db():
         db.close()
 
 @app.post("/configs/", response_model=schemas.Config)
-async def create_config(config: schemas.ConfigCreate, db: Session = Depends(get_db)):
+async def create_config(config: schemas.Config, db: Session = Depends(get_db)):
     try:
         db_config = crud.get_config_by_key(db=db, 
                                             app_name=config.app_name, 
@@ -52,7 +53,7 @@ async def create_config(config: schemas.ConfigCreate, db: Session = Depends(get_
 
 
 @app.put("/configs/", response_model=schemas.Config)
-async def update_config(config: schemas.ConfigUpdate, db: Session = Depends(get_db)):
+async def update_config(config: schemas.Config, db: Session = Depends(get_db)):
     try:
         db_config = crud.get_config_by_key(db=db, 
                                 app_name=config.app_name, 
@@ -73,10 +74,12 @@ async def update_config(config: schemas.ConfigUpdate, db: Session = Depends(get_
         logger.error(ex)
         raise ex
 
-@app.get("/configs/{app_name}/{app_env}", response_model=schemas.Config)
-async def get_configs_by_appenv(app_name: str, app_env: str, db: Session = Depends(get_db)):
+@app.get("/configs", response_model=schemas.ConfigBase)
+async def get_configs(app_name: str, app_env: str, 
+                    srv_name:Optional[str] = None,
+                    db: Session = Depends(get_db)):
     try:
-        db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env)
+        db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env, srv_name=srv_name)
         if db_configs is None:
             raise HTTPException(status_code=404, detail="Config not found")
         # return db_config to json format
@@ -86,10 +89,12 @@ async def get_configs_by_appenv(app_name: str, app_env: str, db: Session = Depen
         logger.error(ex)
         raise ex
 
-@app.get("/dotenv/{app_name}/{app_env}", response_class=PlainTextResponse)
-async def get_configs_by_appenv_to_env_file(app_name: str, app_env: str, db: Session = Depends(get_db)):
+@app.get("/configs.env", response_class=PlainTextResponse)
+async def get_configs_by_appenv_to_env_file(app_name: str, app_env: str, 
+                    srv_name:Optional[str] = None,
+                    db: Session = Depends(get_db)):
     try:
-        db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env)
+        db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env, srv_name=srv_name)
         if db_configs is None:
             raise HTTPException(status_code=404, detail="Config not found")
         str_env = ""

@@ -2,18 +2,15 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class ConfigCreate(BaseModel):
+class ConfigBase(BaseModel):
     app_name: str
     app_env: str
+    srv_name: str | None = None
     conf_key: str
+    
+class Config(ConfigBase):
     conf_value: str | None = None
     description: str | None = None
     is_active: bool = True
-
-class ConfigUpdate(ConfigCreate):
-    srv_name: str
-
-class Config(ConfigUpdate):
-    uuid: str
     created_at: datetime
     updated_at: datetime
