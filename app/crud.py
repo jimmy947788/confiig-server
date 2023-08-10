@@ -5,7 +5,9 @@ from loguru import logger
 def get_configs(db: Session, app_name: str, app_env: str):
     return db.query(models.Config) \
         .filter(models.Config.app_name == app_name) \
-        .filter(models.Config.app_env == app_env).all()
+        .filter(models.Config.app_env == app_env) \
+        .filter(models.Config.is_active == True) \
+        .all()
 
 def get_config_by_key(db: Session, app_name: str, app_env: str, conf_key: str):
     return db.query(models.Config) \
