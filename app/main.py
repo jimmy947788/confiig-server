@@ -42,7 +42,6 @@ async def create_config(config: schemas.ConfigCreate, db: Session = Depends(get_
         db_config = crud.get_config_by_key(db=db, 
                                             app_name=config.app_name, 
                                             app_env=config.app_env, 
-                                            srv_name=config.srv_name, 
                                             conf_key=config.conf_key)
         if db_config:
             raise HTTPException(status_code=400, detail="Config already exists")       
@@ -53,18 +52,18 @@ async def create_config(config: schemas.ConfigCreate, db: Session = Depends(get_
 
 
 @app.put("/configs/", response_model=schemas.Config)
-async def update_config(config: schemas.ConfigCreate, db: Session = Depends(get_db)):
+async def update_config(config: schemas.ConfigUpdate, db: Session = Depends(get_db)):
     try:
         db_config = crud.get_config_by_key(db=db, 
                                 app_name=config.app_name, 
-                                app_env=config.app_env, 
-                                srv_name=config.srv_name, 
+                                app_env=config.app_env,
                                 conf_key=config.conf_key)
         if not db_config:
             raise HTTPException(status_code=404, detail="Hero not found")
         
         db_config.conf_value = config.conf_value
         db_config.description = config.description
+        db_config.is_active = config.is_active
         db_config.updated_at = datetime.now()
         db.add(db_config)
         db.commit()

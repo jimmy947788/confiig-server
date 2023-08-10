@@ -2,8 +2,7 @@ version: "3.5"
 
 volumes:
   rabbitmq-data:
-    
-    
+
 services:
   config-server:
     image: config-server
@@ -11,30 +10,38 @@ services:
       context: ./app
       dockerfile: Dockerfile
       target: runner
-    container_name: config-server.local
-    hostname: config-server.local
+    container_name: config-server.srv
+    hostname: config-server.srv
     ports:
       - 8010:8000
     environment:
-      DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE}"
+      APP_NAME: "config-server"
+    env_file: ./config/default.env
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
+
   mysql:
     image: mysql:8-oracle
-    container_name: mysql.local
-    hostname: mysql.local
+    container_name: mysql.srv
+    hostname: mysql.srv
     ports:
       - 3306:3306
     volumes:
-      - ./mysql/database:/docker-entrypoint-initdb.d
+      - ./mysql/initdb:/docker-entrypoint-initdb.d
       - ./mysql/conf:/etc/mysql/conf.d
       - ./mysql/data:/var/lib/mysql
-    env_file: ./config/DEV.env
+    env_file: ./config/default.env
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
-    container_name: rabbitmq.local
-    hostname: rabbitmq.local
+    container_name: rabbitmq.srv
+    hostname: rabbitmq.srv
     restart: always
     ports:
       - 5672:5672
@@ -47,4 +54,3 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq # data mapping -> host: container
     #- ./rabbitmq/init.sh:/scripts/init.sh
     #- ./rabbitmq/init_check.sh:/scripts/init_check.sh
-    
