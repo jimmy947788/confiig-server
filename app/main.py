@@ -41,8 +41,8 @@ def get_db():
 async def create_config(config: schemas.Config, db: Session = Depends(get_db)):
     try:
         db_config = crud.get_config_by_key(db=db, 
-                                            app_name=config.app_name, 
-                                            app_env=config.app_env, 
+                                            app_name=config.app_name,
+                                            app_env=config.app_env,
                                             conf_key=config.conf_key)
         if db_config:
             raise HTTPException(status_code=400, detail="Config already exists")       
@@ -56,7 +56,7 @@ async def create_config(config: schemas.Config, db: Session = Depends(get_db)):
 async def update_config(config: schemas.Config, db: Session = Depends(get_db)):
     try:
         db_config = crud.get_config_by_key(db=db, 
-                                app_name=config.app_name, 
+                                app_name=config.app_name,
                                 app_env=config.app_env,
                                 conf_key=config.conf_key)
         if not db_config:
@@ -75,8 +75,8 @@ async def update_config(config: schemas.Config, db: Session = Depends(get_db)):
         raise ex
 
 @app.get("/configs", response_model=schemas.ConfigBase)
-async def get_configs(app_name: str, app_env: str, 
-                    srv_name:Optional[str] = None,
+async def get_configs(app_name: str, app_env: str,
+                    srv_name: Optional[str] = None,
                     db: Session = Depends(get_db)):
     try:
         db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env, srv_name=srv_name)
@@ -91,10 +91,10 @@ async def get_configs(app_name: str, app_env: str,
 
 @app.get("/configs.env", response_class=PlainTextResponse)
 async def get_configs_by_appenv_to_env_file(app_name: str, app_env: str, 
-                    srv_name:Optional[str] = None,
+                    srv_name: Optional[str] = None,
                     db: Session = Depends(get_db)):
     try:
-        db_configs = crud.get_configs(db=db, app_name=app_name, app_env=app_env, srv_name=srv_name)
+        db_configs = crud.get_configs(db=db, app_name=app_name, app_env= app_env, srv_name=srv_name)
         if db_configs is None:
             raise HTTPException(status_code=404, detail="Config not found")
         str_env = ""

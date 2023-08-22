@@ -2,6 +2,8 @@ version: "3.5"
 
 volumes:
   rabbitmq-data:
+  mysql-data:
+  mysql-config:
 
 services:
   config-server:
@@ -29,8 +31,8 @@ services:
       - 3306:3306
     volumes:
       - ./mysql/initdb:/docker-entrypoint-initdb.d
-      - ./mysql/conf:/etc/mysql/conf.d
-      - ./mysql/data:/var/lib/mysql
+      - mysql-config:/etc/mysql/conf.d
+      - mysql-data:/var/lib/mysql
     env_file: ./config/default.env
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
